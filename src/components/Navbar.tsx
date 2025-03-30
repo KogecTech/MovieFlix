@@ -70,6 +70,14 @@ export default function Navbar() {
                     Profile
                   </Link>
                 </DropdownMenu.Item>
+                <DropdownMenu.Item asChild>
+                  <Link
+                    href="/dashboard"
+                    className="block px-4 py-2 text-lg font-bold hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onSelect={handleLogout}
                   className="cursor-pointer px-4 py-2 text-lg font-bold hover:bg-gray-100"
