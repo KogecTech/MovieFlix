@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
@@ -15,7 +16,12 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
-        <body>{children}</body>
+        <body className="bg-background text-textPrimary">
+          <Navbar />
+          <main>
+            {children}
+          </main>
+        </body>
       </html>
     </AuthProvider>
   );

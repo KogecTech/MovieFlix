@@ -1,18 +1,29 @@
 module.exports = {
-    content: [
-      "./src/**/*.{js,ts,jsx,tsx}",
-    ],
-    theme: {
-      extend: {
-        colors: {
-          primary: "#1c1e21", // dark tone like TMDB
-          accent: "#f5c518",  // a golden accent (TMDB yellow)
-        },
-        backgroundImage: {
-          'hero-gradient': 'linear-gradient(90deg, #3b82f6, #8b5cf6)', // a blue-to-purple gradient similar to gradific
-        },
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "#0D0D0D",  // dark background
+        card: "#1F1F1F",        // card background
+        accent: "#F5C518",      // accent (like TMDB's yellow)
+        textPrimary: "#FFFFFF", // main text color
+        textSecondary: "#B3B3B3", // muted text
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'], // a modern sans-serif
+      },
+      boxShadow: {
+        card: "0 4px 12px rgba(0, 0, 0, 0.3)",
+      },
+      borderRadius: {
+        xl: "1rem",
+      },
+      transitionProperty: {
+        transform: "transform",
       },
     },
-    plugins: [],
-  };
-  
+  },
+  plugins: [],
+};

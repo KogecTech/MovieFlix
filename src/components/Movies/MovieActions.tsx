@@ -10,17 +10,19 @@ import {
   arrayRemove,
   setDoc,
 } from "firebase/firestore";
+import { Button } from "@/components/ui/button"; // Imported shadcn UI Button
 
 interface MovieActionsProps {
   movieId: number;
+  onBookmark?: (id: number) => void;
+  onFavorite?: (id: number) => void;
 }
 
-const MovieActions = ({ movieId }: MovieActionsProps) => {
+const MovieActions = ({ movieId, onBookmark, onFavorite }: MovieActionsProps) => {
   const { user } = useAuth();
   const [bookmarked, setBookmarked] = useState(false);
   const [favorited, setFavorited] = useState(false);
 
-  // Fetch user's bookmark and favorite status from Firestore.
   useEffect(() => {
     const fetchUserActions = async () => {
       if (user) {
@@ -58,6 +60,9 @@ const MovieActions = ({ movieId }: MovieActionsProps) => {
         });
         setBookmarked(true);
       }
+      if(onBookmark) {
+        onBookmark(movieId);
+      }
     } catch (error: unknown) {
       console.error("Error updating bookmarks:", error);
     }
@@ -78,25 +83,34 @@ const MovieActions = ({ movieId }: MovieActionsProps) => {
         });
         setFavorited(true);
       }
+      if(onFavorite) {
+        onFavorite(movieId);
+      }
     } catch (error: unknown) {
       console.error("Error updating favorites:", error);
     }
   };
 
   return (
-    <div className="flex gap-4 mt-4">
-      <button
-        onClick={toggleBookmark}
-        className="flex-1 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    <div className="flex gap-2 mt-3">
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleBookmark();
+        }}
+        className="flex-1 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400"
       >
         {bookmarked ? "Remove Bookmark" : "Bookmark"}
-      </button>
-      <button
-        onClick={toggleFavorite}
-        className="flex-1 py-2 text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+      </Button>
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleFavorite();
+        }}
+        className="flex-1 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400"
       >
         {favorited ? "Remove Favorite" : "Favorite"}
-      </button>
+      </Button>
     </div>
   );
 };

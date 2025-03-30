@@ -5,7 +5,6 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import MovieList from "@/components/Movies/MovieList";
-import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface MovieDetail {
@@ -21,6 +20,7 @@ export default function DashboardPage() {
   const [bookmarkedMovies, setBookmarkedMovies] = useState<MovieDetail[]>([]);
   const [favoriteMovies, setFavoriteMovies] = useState<MovieDetail[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [updateFlag, setUpdateFlag] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   useEffect(() => {
@@ -60,7 +60,6 @@ export default function DashboardPage() {
           setBookmarkedMovies(bookmarked);
           setFavoriteMovies(favorited);
         } else {
-          // If the user document doesn't exist, initialize it.
           await setDoc(doc(db, "users", user.uid), { bookmarks: [], favorites: [] });
           setBookmarkedMovies([]);
           setFavoriteMovies([]);
@@ -74,7 +73,17 @@ export default function DashboardPage() {
     if (!loading) {
       fetchUserMovies();
     }
-  }, [user, loading, apiKey]);
+  }, [user, loading, apiKey, updateFlag]);
+
+  const handleBookmark = (id: number) => {
+    console.log("Bookmark action occurred for movie ID:", id);
+    setUpdateFlag((prev) => !prev);
+  };
+
+  const handleFavorite = (id: number) => {
+    console.log("Favorite action occurred for movie ID:", id);
+    setUpdateFlag((prev) => !prev);
+  };
 
   if (loading || fetching) {
     return (
@@ -85,43 +94,48 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="container mx-auto p-4">
-        <Card className="mb-6">
+    <div className="container mx-auto p-4">
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold">Dashboard</CardTitle>
+        </CardHeader>
+      </Card>
+      <section className="mb-8">
+        <Card className="mb-4">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">Dashboard</CardTitle>
+            <CardTitle className="text-2xl font-semibold">Bookmarked Movies</CardTitle>
           </CardHeader>
+          <CardContent>
+            {bookmarkedMovies.length > 0 ? (
+              <MovieList
+                movies={bookmarkedMovies}
+                onBookmark={handleBookmark}
+                onFavorite={handleFavorite}
+              />
+            ) : (
+              <p>No bookmarked movies.</p>
+            )}
+          </CardContent>
         </Card>
-        <section className="mb-8">
-          <Card className="mb-4">
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold">Bookmarked Movies</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {bookmarkedMovies.length > 0 ? (
-                <MovieList movies={bookmarkedMovies} />
-              ) : (
-                <p>No bookmarked movies.</p>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-        <section>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold">Favorite Movies</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {favoriteMovies.length > 0 ? (
-                <MovieList movies={favoriteMovies} />
-              ) : (
-                <p>No favorite movies.</p>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-      </div>
-    </>
+      </section>
+      <section>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">Favorite Movies</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {favoriteMovies.length > 0 ? (
+              <MovieList
+                movies={favoriteMovies}
+                onBookmark={handleBookmark}
+                onFavorite={handleFavorite}
+              />
+            ) : (
+              <p>No favorite movies.</p>
+            )}
+          </CardContent>
+        </Card>
+      </section>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import MovieList from "@/components/Movies/MovieList";
-import SearchBar from "@/components/SearchBar";
 
 interface Movie {
   id: number;
@@ -12,34 +11,50 @@ interface Movie {
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   useEffect(() => {
     const fetchMovies = async () => {
-      const endpoint = query
-        ? `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(
-            query
-          )}`
-        : `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
+      setLoading(true);
       try {
-        const res = await fetch(endpoint);
+        const res = await fetch(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`
+        );
         const data = await res.json();
         setMovies(data.results);
       } catch (error) {
         console.error("Error fetching movies:", error);
         setMovies([]);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchMovies();
-  }, [query, apiKey]);
+  }, [apiKey]);
+
+  const handleBookmark = (id: number) => {
+    // Implement bookmark logic here (update Firestore, local state, etc.)
+    console.log("Bookmark movie ID:", id);
+  };
+
+  const handleFavorite = (id: number) => {
+    // Implement favorite logic here
+    console.log("Favorite movie ID:", id);
+  };
+
+  if (loading) {
+    return <p className="text-center mt-8">Loading...</p>;
+  }
 
   return (
-    <main className="container mx-auto px-4 py-6">
+    <main className="w-full max-w-7xl mx-auto px-4 py-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Movies</h1>
-      <SearchBar onSearch={setQuery} />
-      <MovieList movies={movies} />
+      <MovieList
+        movies={movies}
+        onBookmark={handleBookmark}
+        onFavorite={handleFavorite}
+      />
     </main>
   );
 }
